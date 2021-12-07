@@ -2,10 +2,9 @@ def readfile(filename):
     with open("input.txt") as file:
         return list(map(int,file.readlines()[0].split(',')))
 
-def crab1(filename):
+def crabLinear(filename):
     crabs = readfile(filename)
-    minCrab = min(crabs)
-    maxCrab = max(crabs)
+    minCrab, maxCrab = min(crabs), max(crabs)
     idealFuel = float('inf')
     for pos in range(minCrab,maxCrab+1):
         fuel = 0
@@ -14,19 +13,18 @@ def crab1(filename):
         idealFuel = min(idealFuel,fuel)
     return idealFuel
 
-def crab2(filename):
+def crabExponential(filename):
     crabs = readfile(filename)
-    minCrab = min(crabs)
-    maxCrab = max(crabs)
+    minCrab, maxCrab = min(crabs), max(crabs)
     idealFuel = float('inf')
     for pos in range(minCrab,maxCrab+1):
         fuel = 0
         for crab in crabs:
             N = abs(crab-pos)
-            fuel += (N*(N+1))//2
+            fuel += N*(N+1)//2
         idealFuel = min(idealFuel,fuel)
     return idealFuel
 
 
-print(crab1("input.txt"))
-print(crab2("input.txt"))
+print(crabLinear("input.txt"))
+print(crabExponential("input.txt"))
