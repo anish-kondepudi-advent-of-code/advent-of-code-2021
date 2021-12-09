@@ -1,6 +1,6 @@
 
 def readfile(filename):
-    with open("input.txt") as file:
+    with open(filename) as file:
         lines = []
         for line in file.readlines():
             direction, amount = line.split()

@@ -1,6 +1,6 @@
 
 def readfile(filename):
-    with open("input.txt") as file:
+    with open(filename) as file:
         return [int(line.rstrip()) for line in file.readlines()]
 
 

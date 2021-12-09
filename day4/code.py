@@ -1,6 +1,6 @@
 
 def readfile(filename):
-    with open("input.txt") as file:
+    with open(filename) as file:
         return [line.rstrip() for line in file.readlines()]
 
 # Find's 1st Winner's Score

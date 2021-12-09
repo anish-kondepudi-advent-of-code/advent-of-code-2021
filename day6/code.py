@@ -1,5 +1,5 @@
 def readfile(filename):
-    with open("input.txt") as file:
+    with open(filename) as file:
         return list(map(int,file.readlines()[0].split(',')))
 
 def countFishes(filename,days):
