@@ -30,8 +30,8 @@ def findMaxHeight(x1,x2,y1,y2,vx,vy):
 def part1(filename,size):
     x1,x2,y1,y2 = readfile(filename)
     maxHeight = 0
-    for i in range(1,size):
-        for j in range(1,size):
+    for i in range(x2+1):
+        for j in range(y1-1,size):
             valid,height = findMaxHeight(x1,x2,y1,y2,i,j)
             if valid:
                 maxHeight = max(maxHeight,height)
@@ -40,8 +40,8 @@ def part1(filename,size):
 def part2(filename,size):
     x1,x2,y1,y2 = readfile(filename)
     numValid = 0
-    for i in range(-size,size):
-        for j in range(-size,size):
+    for i in range(x2+1):
+        for j in range(y1-1,size):
             if i==0 and j==0: continue
             valid,height = findMaxHeight(x1,x2,y1,y2,i,j)
             numValid += (1 if valid else 0)
