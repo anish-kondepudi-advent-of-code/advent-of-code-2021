@@ -50,72 +50,75 @@ def findPacketVersionSum(binStr):
     # Safety Return (Never Fires)
     return 0
 
-
 def part1(filename):
     hexInput = readfile(filename)
     binInput = hexToBin(hexInput)
     return findPacketVersionSum(binInput)
 
-def operations(parentID,r1,r2):
-    if r2 == -1:
-        return r1
-    elif parentID == 0:
-        return r1+r2
+def operations(parentID,vals):
+    if parentID == 0:
+        return sum(vals)
     elif parentID == 1:
-        return r1*r2
+        return eval('*'.join(str(num) for num in vals))
     elif parentID == 2:
-        return min(r1,r2)
+        return min(vals)
     elif parentID == 3:
-        return max(r1,r2)
+        return max(vals)
     elif parentID == 5:
-        return (1 if r1 > r2 else 0)
+        return int(vals[0]>vals[1])
     elif parentID == 6:
-        return (1 if r1 < r2 else 0)
+        return int(vals[0]<vals[1])
     else:
-        return (1 if r1 == r2 else 0)
+        return int(vals[0]==vals[1])
 
-afterStr = ""
-
-def decodePacket(binStr,numPackets,parentID):
+def decodePacket(packet,i,j):
     # Base Case
-    if binToDec(binStr) == 0:
-        return -1
-    # Recurse
-    packetVal = binToDec(binStr[:3])
-    packetID = binToDec(binStr[3:6])
-    binStr = binStr[6:]
+    if binToDec(packet[i:j]) == 0:
+        return None, None
+
+    packetVal = binToDec(packet[i:i+3])
+    packetID = binToDec(packet[i+3:i+6])
+
     if packetID == 4:
         # Handle Literals
-        i = 0
+        i = i+6
         packetSumStr = ""
-        while int(binStr[i]):
-            packetSumStr += binStr[i+1:i+5]
+        while int(packet[i]):
+            packetSumStr += packet[i+1:i+5]
             i += 5
-        packetSumStr += binStr[i+1:i+5]
-        r1 = binToDec(packetSumStr)
-        r2 = decodePacket(binStr[i+5:],numPackets-1,parentID)
-        print(r1,r2,parentID,operations(parentID,r1,r2))
-        return operations(parentID,r1,r2)
+        packetSumStr += packet[i+1:i+5]
+        return binToDec(packetSumStr),i+5
+
     else:
-        lengthTypeID = binStr[0]
-        if lengthTypeID == '0':
+        i = i+7
+        if packet[i-1] == '0':
             # 15 Bit Number (Len of Subpackets)
-            lenSubpackets = binToDec(binStr[1:16])
-            r1 = decodePacket(binStr[16:16+lenSubpackets],-1,packetID)
-            r2 = decodePacket(binStr[16+lenSubpackets:],numPackets-1,packetID)
-            return operations(parentID,r1,r2)
+            lenSubpackets = binToDec(packet[i:i+15])
+            vals = []
+            endOfPacket = i+15+lenSubpackets
+            end = 0
+            i = i+15
+            while end != endOfPacket:
+                val,end = decodePacket(packet,i,j)
+                vals.append(val)
+                i = end
+            return operations(packetID,vals), end
         else:
             # 11 Bit Number (Num Subpackets)
-            numSubpackets = binToDec(binStr[1:12])
-            r1 = decodePacket(binStr[12:],numSubpackets,packetID)
-            # NEED TO SPLIT THIS
-    # Safety Return (Never Fires)
-    return 0
+            numSubpackets = binToDec(packet[i:i+11])
+            i = i+11
+            vals = []
+            end = 0
+            for _ in range(numSubpackets):
+                val,end = decodePacket(packet,i,j)
+                vals.append(val)
+                i = end
+            return operations(packetID,vals), end            
 
 def part2(filename):
     hexInput = readfile(filename)
     binInput = hexToBin(hexInput)
-    return decodePacket(binInput,-1,0)
+    return decodePacket(binInput,0,len(binInput))[0]
 
 print(part1("input.txt"))
-# print(part2("input.txt")  )
+print(part2("input.txt"))
